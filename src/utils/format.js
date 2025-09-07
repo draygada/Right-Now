@@ -1,7 +1,16 @@
-// Format utilities
+// Utility functions for formatting data
+
 export const formatPrice = (priceCents) => {
   if (priceCents === 0) return "Free";
-  return `$${(priceCents / 100).toFixed(2)}`;
+  if (priceCents === null || priceCents === undefined) return "—";
+  
+  const dollars = priceCents / 100;
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+  }).format(dollars);
 };
 
 export const getTimeRemaining = (expiresAt) => {
@@ -9,17 +18,46 @@ export const getTimeRemaining = (expiresAt) => {
   
   const now = new Date();
   const expiry = new Date(expiresAt);
-  const diffMs = expiry - now;
+  const diffMs = expiry.getTime() - now.getTime();
   
   if (diffMs <= 0) return "Expired";
   
-  const diffMinutes = Math.floor(diffMs / (1000 * 60));
-  const diffHours = Math.floor(diffMinutes / 60);
+  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
   const diffDays = Math.floor(diffHours / 24);
   
-  if (diffDays > 0) return `${diffDays}d`;
-  if (diffHours > 0) return `${diffHours}h`;
-  return `${diffMinutes}m`;
+  if (diffDays > 0) {
+    return diffDays === 1 ? "1 day" : `${diffDays} days`;
+  } else if (diffHours > 0) {
+    return diffHours === 1 ? "1 hour" : `${diffHours} hours`;
+  } else {
+    const diffMinutes = Math.floor(diffMs / (1000 * 60));
+    return diffMinutes <= 1 ? "1 minute" : `${diffMinutes} minutes`;
+  }
+};
+
+export const formatDate = (dateString) => {
+  if (!dateString) return "—";
+  
+  const date = new Date(dateString);
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(date);
+};
+
+export const formatDateTime = (dateString) => {
+  if (!dateString) return "—";
+  
+  const date = new Date(dateString);
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  }).format(date);
 };
 
 export const isExpired = (expiresAt) => {

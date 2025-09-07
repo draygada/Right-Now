@@ -45,7 +45,7 @@ class ApiService {
   // Mock API implementation (current behavior)
   async mockApiCall(endpoint, options = {}) {
     // Import the existing mock API
-    const { mockApi } = await import("../../lib/mockApi");
+    const { mockApi } = await import("../utils/mockApi");
     
     // Simulate network delay
     await new Promise(resolve => setTimeout(resolve, 300));
