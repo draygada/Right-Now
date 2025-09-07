@@ -36,19 +36,26 @@ export const AuthProvider = ({ children }) => {
   };
 
   const login = async (credentials = null) => {
+    console.log("🔐 AuthContext login called with:", credentials);
     try {
-      let userData;
+      let response;
       
       if (credentials) {
         // Form-based login
-        userData = await ApiService.login({
+        console.log("📧 Form-based login");
+        response = await ApiService.login({
           userData: credentials
         });
       } else {
         // Dev login
-        userData = await ApiService.login();
+        console.log("🛠️ Dev login");
+        response = await ApiService.login();
       }
       
+      console.log("📦 ApiService response:", response);
+      // Extract user from response (mockApi returns {user, token})
+      const userData = response.user || response;
+      console.log("👤 Setting user:", userData);
       setUser(userData);
       return userData;
     } catch (error) {
@@ -59,7 +66,9 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (userData) => {
     try {
-      const newUser = await ApiService.register(userData);
+      const response = await ApiService.register(userData);
+      // Extract user from response (mockApi returns {user, token})
+      const newUser = response.user || response;
       setUser(newUser);
       return newUser;
     } catch (error) {

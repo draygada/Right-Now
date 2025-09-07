@@ -75,14 +75,18 @@ const AuthScreen = () => {
   };
 
   const handleDevLogin = async () => {
+    console.log("🚀 Dev login button pressed!");
     try {
       setLoading(true);
-      await login();
+      console.log("📞 Calling login()...");
+      const result = await login();
+      console.log("✅ Login successful:", result);
     } catch (error) {
-      console.error("Dev login error:", error);
-      setErrors({ general: "Dev login failed" });
+      console.error("❌ Dev login error:", error);
+      setErrors({ general: `Dev login failed: ${error.message}` });
     } finally {
       setLoading(false);
+      console.log("🏁 Dev login finished");
     }
   };
 

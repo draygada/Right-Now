@@ -1,5 +1,6 @@
 // API Service Layer - Abstracted for easy backend swapping
 import { API_ENDPOINTS } from "../constants";
+import { mockApi } from "../utils/mockApi";
 
 class ApiService {
   constructor() {
@@ -44,21 +45,27 @@ class ApiService {
 
   // Mock API implementation (current behavior)
   async mockApiCall(endpoint, options = {}) {
-    // Import the existing mock API
-    const { mockApi } = await import("../utils/mockApi");
-    
     // Simulate network delay
     await new Promise(resolve => setTimeout(resolve, 300));
 
+    // Parse JSON body if it exists
+    const body = options.body ? JSON.parse(options.body) : null;
+
     // Route to appropriate mock method based on endpoint
+    console.log("🎯 Mock API endpoint:", endpoint);
+    console.log("📄 Parsed body:", body);
     switch (endpoint) {
       case API_ENDPOINTS.AUTH.LOGIN:
-        return options.body?.userData 
-          ? mockApi.loginWithUserData(options.body.userData)
-          : mockApi.devLogin();
+        if (body?.userData) {
+          console.log("📧 Calling mockApi.login with:", body.userData.email, body.userData.password);
+          return mockApi.login(body.userData.email, body.userData.password);
+        } else {
+          console.log("🛠️ Calling mockApi.devLogin()");
+          return mockApi.devLogin();
+        }
       
       case API_ENDPOINTS.AUTH.REGISTER:
-        return mockApi.loginWithUserData(options.body);
+        return mockApi.signup(body.name, body.email, body.password);
       
       case API_ENDPOINTS.AUTH.LOGOUT:
         return mockApi.logout();
@@ -67,7 +74,7 @@ class ApiService {
         return mockApi.getItems();
       
       case API_ENDPOINTS.ITEMS.CREATE:
-        return mockApi.createItem(options.body);
+        return mockApi.createItem(body);
       
       case API_ENDPOINTS.USER.PROFILE:
         return mockApi.getCurrentUser();
@@ -79,10 +86,13 @@ class ApiService {
 
   // Auth methods
   async login(credentials) {
-    return this.apiCall(API_ENDPOINTS.AUTH.LOGIN, {
+    console.log("🔌 ApiService login called with:", credentials);
+    const result = await this.apiCall(API_ENDPOINTS.AUTH.LOGIN, {
       method: "POST",
       body: JSON.stringify(credentials),
     });
+    console.log("🔌 ApiService login result:", result);
+    return result;
   }
 
   async register(userData) {
