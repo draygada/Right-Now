@@ -4,9 +4,11 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { useAuth } from "../context/AuthContext";
 
+// Import our new TabNavigator
+import TabNavigator from "../../navigation/TabNavigator";
+
 // Screens
 import AuthScreen from "../screens/AuthScreen";
-import HomeScreen from "../screens/HomeScreen";
 import ItemDetailScreen from "../screens/ItemDetailScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 import SettingsScreen from "../screens/SettingsScreen";
@@ -42,9 +44,9 @@ const AppNavigator = () => {
         ) : (
           <>
             <Stack.Screen 
-              name="Home" 
-              component={HomeScreen}
-              options={{ title: "RightNow" }}
+              name="MainTabs" 
+              component={TabNavigator}
+              options={{ headerShown: false }}
             />
             <Stack.Screen 
               name="ItemDetail" 
